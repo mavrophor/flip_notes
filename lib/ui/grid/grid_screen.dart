@@ -1,5 +1,6 @@
 import 'package:flip_notes/data/providers/notes.dart';
 import 'package:flip_notes/ui/grid/grid_note_item.dart';
+import 'package:flip_notes/ui/note_view/note_view_screen.dart';
 import 'package:flip_notes/ui/shared_widgets/custom_error.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,9 +13,12 @@ class GridScreen extends ConsumerStatefulWidget {
 }
 
 class _GridScreenState extends ConsumerState<GridScreen> {
+  late ScrollController gridScrollcontroller = ScrollController();
+  @override
   @override
   Widget build(BuildContext context) {
     final notes = ref.watch(notesProvider);
+    final listOfIds = notes.whenOrNull(data: (data) => data.map((e) => e.id).toList());
 
     return Scaffold(
       appBar: AppBar(
@@ -24,28 +28,49 @@ class _GridScreenState extends ConsumerState<GridScreen> {
         actions: const [],
       ),
       floatingActionButton: FloatingActionButton(
-        tooltip: "Create new",
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        heroTag: 'create',
+        tooltip: 'Create a new note',
+        // label: const Text('New note'),
+        child: const Icon(Icons.add, size: 36),
         onPressed: () {}, //TODO
-        child: const Icon(Icons.add),
       ),
       body: notes.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => CustomErrorView(error.toString()),
         data: (list) {
           if (list.isNotEmpty) {
-            return GridView.builder(
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 200,
-                mainAxisExtent: 192,
-                mainAxisSpacing: 4,
-                crossAxisSpacing: 4,
-              ),
-              padding: const EdgeInsets.all(8),
-              itemCount: list.length,
-              itemBuilder: (context, index) => GridNoteItem(
-                note: list[index],
-                onTap: () {}, //TODO
-                onLongPress: () {}, //TODO
+            return RefreshIndicator(
+              onRefresh: () => ref.read(notesProvider.notifier).reload(),
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 384,
+                  mainAxisExtent: 192,
+                  mainAxisSpacing: 4,
+                  crossAxisSpacing: 4,
+                ),
+                controller: gridScrollcontroller,
+                padding: const EdgeInsets.all(8),
+                itemCount: list.length,
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemBuilder: (context, index) => GridNoteItem(
+                  note: list[index],
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => NoteViewScreen(
+                          listOfNotes: list,
+                          initialIndex: index,
+                          initialTheme: getTheme(list[index].color, Theme.of(context).brightness),
+                          updateIndex: (newIndex) => gridScrollcontroller
+                              .jumpTo(newIndex * gridScrollcontroller.position.maxScrollExtent / list.length),
+                        ),
+                      ),
+                    );
+                  }, //TODO
+                  onLongPress: () {}, //TODO
+                ),
               ),
             );
           }

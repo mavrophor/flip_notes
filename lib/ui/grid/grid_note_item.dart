@@ -41,7 +41,10 @@ class GridNoteItem extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: colors.onPrimaryContainer,
+                        ),
                   ),
                 ),
               ),
@@ -51,12 +54,7 @@ class GridNoteItem extends StatelessWidget {
                   maxLines: 6,
                   overflow: TextOverflow.fade,
                   textAlign: TextAlign.start,
-                  text: TextSpan(
-                    text: note.contentFront,
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          color: colors.onPrimaryContainer,
-                        ),
-                  ),
+                  text: TextSpan(text: note.contentFront, style: Theme.of(context).textTheme.bodyMedium),
                 ),
               ),
               const Spacer(),
