@@ -1,4 +1,5 @@
 import 'package:flip_notes/ui/grid/grid_screen.dart';
+import 'package:flip_notes/utils/theming.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,18 +13,8 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.from(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
-          brightness: Brightness.light,
-        ),
-      ),
-      darkTheme: ThemeData.from(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
-          brightness: Brightness.dark,
-        ),
-      ),
+      theme: themeDefault,
+      darkTheme: themeDefaultDark,
       themeMode: ThemeMode.system,
       home: const GridScreen(),
     );

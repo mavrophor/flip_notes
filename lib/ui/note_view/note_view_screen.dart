@@ -1,16 +1,8 @@
 import 'package:flip_notes/data/models/note_model.dart';
 import 'package:flip_notes/ui/note_view/note_view_flip_widget.dart';
+import 'package:flip_notes/utils/theming.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-ThemeData getTheme(Color colorseed, Brightness brightness) {
-  return ThemeData.from(
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: colorseed,
-      brightness: brightness,
-    ),
-  );
-}
 
 class NoteViewScreen extends ConsumerStatefulWidget {
   const NoteViewScreen({
@@ -78,7 +70,7 @@ class _NoteViewScreenState extends ConsumerState<NoteViewScreen> {
             setState(() {
               currentIndex = value;
               currentNote = widget.listOfNotes[currentIndex];
-              currentNoteTheme = getTheme(currentNote.color, Theme.of(context).brightness);
+              currentNoteTheme = getThemeData(currentNote.color, Theme.of(context).brightness);
             });
           },
           controller: pageController,

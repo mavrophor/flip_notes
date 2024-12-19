@@ -2,6 +2,7 @@ import 'package:flip_notes/data/providers/notes.dart';
 import 'package:flip_notes/ui/grid/grid_note_item.dart';
 import 'package:flip_notes/ui/note_view/note_view_screen.dart';
 import 'package:flip_notes/ui/shared_widgets/custom_error.dart';
+import 'package:flip_notes/utils/theming.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -18,7 +19,6 @@ class _GridScreenState extends ConsumerState<GridScreen> {
   @override
   Widget build(BuildContext context) {
     final notes = ref.watch(notesProvider);
-    final listOfIds = notes.whenOrNull(data: (data) => data.map((e) => e.id).toList());
 
     return Scaffold(
       appBar: AppBar(
@@ -62,13 +62,13 @@ class _GridScreenState extends ConsumerState<GridScreen> {
                         builder: (context) => NoteViewScreen(
                           listOfNotes: list,
                           initialIndex: index,
-                          initialTheme: getTheme(list[index].color, Theme.of(context).brightness),
+                          initialTheme: getThemeData(list[index].color, Theme.of(context).brightness),
                           updateIndex: (newIndex) => gridScrollcontroller
-                              .jumpTo(newIndex * gridScrollcontroller.position.maxScrollExtent / list.length),
+                              .jumpTo(1.0 * newIndex * gridScrollcontroller.position.maxScrollExtent / list.length),
                         ),
                       ),
                     );
-                  }, //TODO
+                  },
                   onLongPress: () {}, //TODO
                 ),
               ),
