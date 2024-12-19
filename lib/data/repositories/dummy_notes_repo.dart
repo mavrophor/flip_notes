@@ -9,7 +9,7 @@ class DummyNotesRepo {
   final uuid = const UuidV8();
 
   Future<List<Note>> getList() async {
-    return await _generateNotes(amount: 12);
+    return await generateNotes(amount: 12);
   }
 
   Future<Note> create({
@@ -32,7 +32,7 @@ class DummyNotesRepo {
     );
   }
 
-  Future<List<Note>> _generateNotes({required int amount}) async {
+  Future<List<Note>> generateNotes({required int amount}) async {
     final List<Note> list = [];
     final now = DateTime.now();
     for (final i in Iterable.generate(amount)) {

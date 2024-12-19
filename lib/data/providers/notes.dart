@@ -2,10 +2,11 @@ import 'package:flip_notes/data/models/note_model.dart';
 import 'package:flip_notes/data/repositories/dummy_notes_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:collection/collection.dart';
 
 part 'notes.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class Notes extends _$Notes {
   final _repo = DummyNotesRepo();
 
@@ -15,22 +16,58 @@ class Notes extends _$Notes {
     return list;
   }
 
+  //reload
+  Future<void> reload() async {
+    if (state.isLoading) return;
+    state = const AsyncLoading();
+    ref.invalidateSelf();
+  }
+
+  FutureOr<Note?> getNoteFromState(String? noteId) async {
+    if (noteId == null) return null;
+    if (state.isLoading) await ref.read(notesProvider.future);
+    if (!state.hasValue) return null;
+    final note = state.value!.firstWhereOrNull((e) => e.id == noteId);
+    return note;
+  }
+
+  FutureOr<void> addDummyNotes() async {
+    final dummyNotes = await _repo.generateNotes(amount: 12);
+    state = AsyncData([...state.value ?? [], ...dummyNotes]);
+  }
+
   //temp implementation
-  Future<bool> updateNote(String id, Note updatedNote) async {
+  Future<bool> updateNote({
+    required String id,
+    String? title,
+    String? contentFront,
+    String? contentBack,
+    Color? color,
+    Set<String>? tags,
+  }) async {
     if (!state.hasValue) return false;
     final index = state.value!.indexWhere((note) => note.id == id);
     if (index < 0) return false;
-    state.value![index] = updatedNote;
+    state.value![index] = state.value![index].copyWith(
+      title: title,
+      contentFront: contentFront,
+      contentBack: contentBack,
+      color: color,
+      tags: tags,
+      updatedAt: DateTime.now(),
+    );
     return true;
   }
 
   //temp implementation
-  FutureOr<void> deleteNotes(List<String> listOfIds) async {
-    if (!state.hasValue) return;
+  FutureOr<bool> deleteNotes(List<String> listOfIds) async {
+    if (!state.hasValue) return false;
     state = const AsyncLoading();
     final notes = state.value!;
-    notes.removeWhere((note) => listOfIds.contains(note.id));
-    state = AsyncData(notes);
+    state = AsyncData(
+      notes.map((note) => listOfIds.contains(note.id) ? note.copyWith(deletedAt: () => DateTime.now()) : note).toList(),
+    );
+    return true;
   }
 
   //temp implementation

@@ -1,4 +1,5 @@
 import 'package:flip_notes/data/models/note_model.dart';
+import 'package:flip_notes/ui/edit/edit_screen.dart';
 import 'package:flip_notes/ui/note_view/note_view_flip_widget.dart';
 import 'package:flip_notes/utils/theming.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +60,9 @@ class _NoteViewScreenState extends ConsumerState<NoteViewScreen> {
         tooltip: 'Edit this note',
         // label: const Text('New note'),
         child: const Icon(Icons.edit, size: 36),
-        onPressed: () {}, //TODO
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => EditScreen(noteToEdit: currentNote)),
+        ),
       ),
       body: Hero(
         tag: currentNote.id,

@@ -1,4 +1,5 @@
 import 'package:flip_notes/data/providers/notes.dart';
+import 'package:flip_notes/ui/edit/edit_screen.dart';
 import 'package:flip_notes/ui/grid/grid_note_item.dart';
 import 'package:flip_notes/ui/note_view/note_view_screen.dart';
 import 'package:flip_notes/ui/shared_widgets/custom_error.dart';
@@ -34,7 +35,11 @@ class _GridScreenState extends ConsumerState<GridScreen> {
         tooltip: 'Create a new note',
         // label: const Text('New note'),
         child: const Icon(Icons.add, size: 36),
-        onPressed: () {}, //TODO
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const EditScreen(),
+          ),
+        ),
       ),
       body: notes.when(
         loading: () => const Center(child: CircularProgressIndicator()),
