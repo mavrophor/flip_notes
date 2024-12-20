@@ -1,4 +1,5 @@
 import 'package:flip_notes/data/providers/notes.dart';
+import 'package:flip_notes/data/sources/local_db.dart';
 import 'package:flip_notes/ui/edit/edit_screen.dart';
 import 'package:flip_notes/ui/grid/grid_note_item.dart';
 import 'package:flip_notes/ui/note_view/note_view_screen.dart';
@@ -43,7 +44,7 @@ class _GridScreenState extends ConsumerState<GridScreen> {
       ),
       body: notes.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => CustomErrorView(error.toString()),
+        error: (error, _) => Center(child: CustomErrorView(error.toString())),
         data: (list) {
           if (list.isNotEmpty) {
             return RefreshIndicator(
@@ -80,21 +81,19 @@ class _GridScreenState extends ConsumerState<GridScreen> {
             );
           }
           //if empty:
-          return ListView(
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Spacer(flex: 1),
-                  Text(
-                    'Nothing to see here.\nPlease try creating some cards.',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                  const Spacer(flex: 8),
-                ],
-              )
+              const Spacer(flex: 1),
+              Center(
+                child: Text(
+                  'Nothing to see here.\nPlease try creating some cards.',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const Spacer(flex: 8),
             ],
           );
         },

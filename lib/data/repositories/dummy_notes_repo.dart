@@ -35,7 +35,7 @@ class DummyNotesRepo {
   Future<List<Note>> generateNotes({required int amount}) async {
     final List<Note> list = [];
     final now = DateTime.now();
-    for (final i in Iterable.generate(amount)) {
+    for (var i = 1; i <= amount; i++) {
       final note = Note(
         id: uuid.generate(),
         title: 'Note #$i',

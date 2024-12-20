@@ -48,7 +48,7 @@ class _EditScreenState extends ConsumerState<EditScreen> {
             contentFront: _enteredContentFront!,
             contentBack: _enteredContentBack!,
             color: _enteredColor,
-            tags: _enteredTags!.toList(),
+            tags: _enteredTags?.toList(),
           );
       if (mounted) Navigator.of(context).pop();
     }

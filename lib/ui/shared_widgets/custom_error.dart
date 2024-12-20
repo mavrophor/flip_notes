@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-const String kErrorMessage =
-    'Oops, something went wrong. Please try again later.';
+const String kErrorMessage = 'Oops, something went wrong. Please try again later.';
 
 class CustomErrorView extends StatelessWidget {
   const CustomErrorView(this.description, {super.key});
@@ -21,10 +20,8 @@ class CustomErrorView extends StatelessWidget {
         Text(
           description,
           textAlign: TextAlign.center,
-          style: Theme.of(context)
-              .textTheme
-              .bodyLarge!
-              .copyWith(color: Colors.grey),
+          maxLines: 20,
+          style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.grey),
         ),
       ],
     );
