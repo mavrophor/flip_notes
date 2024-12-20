@@ -1,4 +1,5 @@
 import 'package:flip_notes/data/models/note_model.dart';
+import 'package:flip_notes/data/providers/notes.dart';
 import 'package:flip_notes/ui/edit/edit_screen.dart';
 import 'package:flip_notes/ui/note_view/note_view_flip_widget.dart';
 import 'package:flip_notes/utils/theming.dart';
@@ -46,6 +47,17 @@ class _NoteViewScreenState extends ConsumerState<NoteViewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(notesProvider, (_, __) async {
+      final thisNote = await ref.read(notesProvider.notifier).getNoteFromState(currentNote.id);
+      if (thisNote != null && mounted) {
+        setState(() {
+          currentNote = thisNote;
+          currentNoteTheme = getThemeData(thisNote.color, Theme.of(context).brightness);
+        });
+      }
+    });
+    final listOfNotes = ref.watch(notesProvider).valueOrNull ?? widget.listOfNotes;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: currentNoteTheme.colorScheme.primary,
@@ -67,18 +79,18 @@ class _NoteViewScreenState extends ConsumerState<NoteViewScreen> {
       body: Hero(
         tag: currentNote.id,
         child: PageView.builder(
-          itemCount: widget.listOfNotes.length,
+          itemCount: listOfNotes.length,
           onPageChanged: (value) {
             widget.updateIndex(value);
             setState(() {
               currentIndex = value;
-              currentNote = widget.listOfNotes[currentIndex];
+              currentNote = listOfNotes[currentIndex];
               currentNoteTheme = getThemeData(currentNote.color, Theme.of(context).brightness);
             });
           },
           controller: pageController,
           itemBuilder: (context, index) {
-            return NoteViewFlipWidget(note: widget.listOfNotes[index]);
+            return NoteViewFlipWidget(note: listOfNotes[index]);
           },
         ),
       ),
