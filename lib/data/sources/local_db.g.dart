@@ -1,24 +1,24 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'notes.dart';
+part of 'local_db.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$notesHash() => r'69232bcc5e0d665ff803e3eab4569a1b2404547e';
+String _$localDbHash() => r'41071dc88d57e8d724ab2715a6f57366ea27306b';
 
-/// See also [Notes].
-@ProviderFor(Notes)
-final notesProvider = AsyncNotifierProvider<Notes, List<Note>>.internal(
-  Notes.new,
-  name: r'notesProvider',
+/// See also [LocalDb].
+@ProviderFor(LocalDb)
+final localDbProvider = AsyncNotifierProvider<LocalDb, Database>.internal(
+  LocalDb.new,
+  name: r'localDbProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$notesHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$localDbHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$Notes = AsyncNotifier<List<Note>>;
+typedef _$LocalDb = AsyncNotifier<Database>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

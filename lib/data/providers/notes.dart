@@ -1,5 +1,7 @@
 import 'package:flip_notes/data/models/note_model.dart';
 import 'package:flip_notes/data/repositories/dummy_notes_repo.dart';
+import 'package:flip_notes/data/repositories/notes_local_repo.dart';
+import 'package:flip_notes/data/sources/local_db.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:collection/collection.dart';
@@ -8,11 +10,16 @@ part 'notes.g.dart';
 
 @Riverpod(keepAlive: true)
 class Notes extends _$Notes {
-  final _repo = DummyNotesRepo();
+  final _dummyRepo = DummyNotesRepo();
+  NotesLocalRepo? _repo;
 
   @override
   FutureOr<List<Note>> build() async {
-    final list = await _repo.getList();
+    if (_repo == null) {
+      final localDb = await ref.read(localDbProvider.future);
+      _repo = NotesLocalRepo(db: localDb);
+    }
+    final list = await _repo!.getList();
     return list;
   }
 
@@ -32,8 +39,11 @@ class Notes extends _$Notes {
   }
 
   FutureOr<void> addDummyNotes() async {
-    final dummyNotes = await _repo.generateNotes(amount: 12);
+    final dummyNotes = await _dummyRepo.generateNotes(amount: 64);
     state = AsyncData([...state.value ?? [], ...dummyNotes]);
+    for (final note in dummyNotes) {
+      _repo!.saveNote(note: note);
+    }
   }
 
   //temp implementation
@@ -46,9 +56,9 @@ class Notes extends _$Notes {
     Set<String>? tags,
   }) async {
     if (!state.hasValue) return false;
-    final index = state.value!.indexWhere((note) => note.id == id);
-    if (index < 0) return false;
-    state.value![index] = state.value![index].copyWith(
+    final oldNote = state.value!.firstWhereOrNull((note) => note.id == id);
+    if (oldNote == null) return false;
+    final updatedNote = oldNote.copyWith(
       title: title,
       contentFront: contentFront,
       contentBack: contentBack,
@@ -56,6 +66,8 @@ class Notes extends _$Notes {
       tags: tags,
       updatedAt: DateTime.now(),
     );
+    _repo!.updateNote(note: updatedNote);
+    state = AsyncData(state.value!.map((note) => note.id == oldNote.id ? updatedNote : note).toList());
     return true;
   }
 
@@ -63,6 +75,9 @@ class Notes extends _$Notes {
   FutureOr<bool> deleteNotes(List<String> listOfIds) async {
     if (!state.hasValue) return false;
     state = const AsyncLoading();
+    for (final id in listOfIds) {
+      _repo!.deleteNote(id);
+    }
     final notes = state.value!;
     state = AsyncData(
       notes.map((note) => listOfIds.contains(note.id) ? note.copyWith(deletedAt: () => DateTime.now()) : note).toList(),
@@ -78,12 +93,13 @@ class Notes extends _$Notes {
     required Color color,
     List<String>? tags,
   }) async {
-    final note = await _repo.create(
+    final note = await _dummyRepo.create(
       title: title,
       contentFront: contentFront,
       contentBack: contentBack,
       color: color,
     );
+    _repo!.saveNote(note: note);
     state = AsyncData([...state.value ?? [], note]);
   }
 }

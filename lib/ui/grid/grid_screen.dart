@@ -27,7 +27,14 @@ class _GridScreenState extends ConsumerState<GridScreen> {
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
         title: const Text('Flip Notes!'),
-        actions: const [],
+        actions: const [
+          //DEBUG ONLY
+          // IconButton(
+          //   icon: const Icon(Icons.delete_forever_outlined),
+          //   tooltip: 'CLEAR DATABASE',
+          //   onPressed: () => ref.read(localDbProvider.notifier).clearAllUserData(),
+          // )
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).colorScheme.primary,
