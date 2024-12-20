@@ -10,45 +10,41 @@ class NotesLocalRepo {
   final String notesTable = 'notes';
   static String get _now => DateTime.now().copyWith(microsecond: 0).toUtc().toIso8601String();
 
-  //get notes in set order, then by creation date
+  ///get notes in set order, then by creation date
   Future<List<Note>> getList({
     NoteFields sortByField = NoteFields.createdAt,
     bool descending = false,
   }) async {
-    //   final localData = await db.rawQuery('''
-    // SELECT
-    //   $notesTable.${NoteFields.id.name}
-    //   $notesTable.${NoteFields.title.name}
-    //   $notesTable.${NoteFields.contentFront.name}
-    //   $notesTable.${NoteFields.contentBack.name}
-    //   $notesTable.${NoteFields.color.name}
-    //   $notesTable.${NoteFields.tags.name}
-    //   $notesTable.${NoteFields.createdAt.name}
-    //   $notesTable.${NoteFields.updatedAt.name}
-    // FROM notes
-    //     WHERE $notesTable.${NoteFields.deletedAt.name} IS NULL
-    //     ORDER BY $notesTable.${sortByField.name} ${descending ? 'DESC' : 'ASC'}
-    //       ${sortByField == NoteFields.createdAt ? '' : ', notes.${NoteFields.createdAt.name}'}
-    //   ''');
-    final localData = await db.query(notesTable);
-    List<Note> notesList = [];
-    for (final map in localData) {
-      notesList.add(Note.fromMap(map));
-    }
-    return notesList;
+    final localData = await db.rawQuery('''
+    SELECT
+      $notesTable.${NoteFields.id.name},
+      $notesTable.${NoteFields.title.name},
+      $notesTable.${NoteFields.contentFront.name},
+      $notesTable.${NoteFields.contentBack.name},
+      $notesTable.${NoteFields.color.name},
+      $notesTable.${NoteFields.tags.name},
+      $notesTable.${NoteFields.createdAt.name},
+      $notesTable.${NoteFields.updatedAt.name}
+    FROM $notesTable
+    WHERE $notesTable.${NoteFields.deletedAt.name} IS NULL
+    ORDER BY $notesTable.${sortByField.name} ${descending ? 'DESC' : 'ASC'}
+      ${sortByField == NoteFields.createdAt ? '' : ', notes.${NoteFields.createdAt.name}'}
+    ''');
+    Iterable<Note> notes = localData.map((e) => Note.fromMap(e));
+    return notes.toList();
   }
 
-  //get a single note by id if exists
+  ///get a single note by id if exists
   Future<Note?> getNote(String id) async {
     final entries = await db.rawQuery(
       '''SELECT
-    $notesTable.${NoteFields.id.name}
-    $notesTable.${NoteFields.title.name}
-    $notesTable.${NoteFields.contentFront.name}
-    $notesTable.${NoteFields.contentBack.name}
-    $notesTable.${NoteFields.color.name}
-    $notesTable.${NoteFields.tags.name}
-    $notesTable.${NoteFields.createdAt.name}
+    $notesTable.${NoteFields.id.name},
+    $notesTable.${NoteFields.title.name},
+    $notesTable.${NoteFields.contentFront.name},
+    $notesTable.${NoteFields.contentBack.name},
+    $notesTable.${NoteFields.color.name},
+    $notesTable.${NoteFields.tags.name},
+    $notesTable.${NoteFields.createdAt.name},
     $notesTable.${NoteFields.updatedAt.name}
       WHERE notes.id = ?''',
       [id],
@@ -57,13 +53,13 @@ class NotesLocalRepo {
     return Note.fromMap(entries.first);
   }
 
-  //save a note in local db
+  ///save a note in local db
   Future<bool> saveNote({required Note note}) async {
     final checkId = await db.insert(notesTable, note.toMap());
     return checkId != 0;
   }
 
-  //soft delete a note in local db, and return whether a note was deleted
+  ///soft delete a note in local db, and return whether a note was deleted
   Future<bool> deleteNote(String deletedNoteId) async {
     final now = _now;
     final checkId = await db.update(
@@ -75,7 +71,7 @@ class NotesLocalRepo {
     return checkId != 0;
   }
 
-  //update a note and return if updated
+  ///update a note and return if updated
   Future<bool> updateNote({required Note note}) async {
     final checkId = await db.update(
       notesTable,
